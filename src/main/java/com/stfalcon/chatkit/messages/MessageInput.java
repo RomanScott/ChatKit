@@ -19,6 +19,9 @@ package com.stfalcon.chatkit.messages;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.Space;
 import android.text.Editable;
@@ -41,6 +44,8 @@ import java.lang.reflect.Field;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class MessageInput extends RelativeLayout
         implements View.OnClickListener, TextWatcher {
+
+    public boolean hasAttachments = false;
 
     protected EditText messageInput;
     protected ImageButton messageSendButton;
@@ -85,6 +90,18 @@ public class MessageInput extends RelativeLayout
     }
 
     /**
+     * Sets whether or not the MessageInput has attachments.
+     * @param hasAttachments boolean
+     */
+
+    public void setHasAttachments(boolean hasAttachments){
+        this.hasAttachments = hasAttachments;
+
+        if (input.length() == 0)
+            messageSendButton.setEnabled(hasAttachments);
+    }
+
+    /**
      * Returns EditText for messages input
      *
      * @return EditText
@@ -108,6 +125,7 @@ public class MessageInput extends RelativeLayout
         if (id == R.id.messageSendButton) {
             boolean isSubmitted = onSubmit();
             if (isSubmitted) {
+                hasAttachments = false;
                 messageInput.setText("");
             }
         } else if (id == R.id.attachmentButton) {
@@ -122,7 +140,8 @@ public class MessageInput extends RelativeLayout
     @Override
     public void onTextChanged(CharSequence s, int start, int count, int after) {
         input = s;
-        messageSendButton.setEnabled(input.length() > 0);
+
+        if (!hasAttachments) messageSendButton.setEnabled(input.length() > 0);
     }
 
     /**
@@ -140,6 +159,27 @@ public class MessageInput extends RelativeLayout
     @Override
     public void afterTextChanged(Editable editable) {
         //do nothing
+    }
+
+    @Nullable
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("superState", super.onSaveInstanceState());
+        bundle.putBoolean("hasAttachments", hasAttachments);
+
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            state = bundle.getParcelable("superState");
+
+            setHasAttachments(bundle.getBoolean("hasAttachments"));
+        }
+        super.onRestoreInstanceState(state);
     }
 
     private boolean onSubmit() {
