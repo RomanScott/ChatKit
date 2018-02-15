@@ -102,6 +102,24 @@ public class MessageInput extends RelativeLayout
     }
 
     /**
+     * Changes the background drawable for the message send button.
+     * @param drawable the drawable
+     */
+
+    public void setSendBackgroundDrawable(Drawable drawable){
+        ViewCompat.setBackground(messageInput, drawable);
+    }
+
+    /**
+     * Changes the background drawable for the attachment add button.
+     * @param drawable the drawable
+     */
+
+    public void setAttachmentBackgroundDrawable(Drawable drawable){
+        ViewCompat.setBackground(attachmentButton, drawable);
+    }
+
+    /**
      * Returns EditText for messages input
      *
      * @return EditText

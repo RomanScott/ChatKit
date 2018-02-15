@@ -1,15 +1,16 @@
 apply plugin: 'com.android.library'
 apply from: '../../../Commons/version.gradle'
+apply from: '../../android-version.gradle'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion androidVersion.compileSdkVersion
+    buildToolsVersion androidVersion.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 27
-        versionCode weMessageVersion.versionAndroidBuild
-        versionName weMessageVersion.versionName
+        minSdkVersion androidVersion.minSdkVersion
+        targetSdkVersion androidVersion.targetSdkVersion
+        versionCode androidVersion.versionAndroidBuild
+        versionName androidVersion.versionName
 
         consumerProguardFiles 'proguard.txt'
     }
@@ -20,15 +21,10 @@ android {
     }
 }
 
-ext {
-    supportVersion = '27.0.2'
-    flexboxVersion = '0.3.2'
-}
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile "com.android.support:appcompat-v7:$supportVersion"
-    compile "com.android.support:design:$supportVersion"
-    compile "com.google.android:flexbox:$flexboxVersion"
+    compile "com.android.support:appcompat-v7:$androidVersion.supportVersion"
+    compile "com.android.support:design:$androidVersion.supportVersion"
+    compile "com.google.android:flexbox:0.3.2"
 }

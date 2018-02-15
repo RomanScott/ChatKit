@@ -1,6 +1,6 @@
 # ChatKit for Android
 
-This is a **fork** of the original ChatKit library developed by **Stfalcon Studio**, modified by Roman Scott for the weMessage app. ChatKit is a library designed to simplify the development of UI for chat. It has flexible possibilities for styling, customizing and data management.
+This is a **fork** of the original ChatKit library developed by **Stfalcon Studio**, modified by Roman Scott for the [weMessage](https://wemessageapp.com) app. ChatKit is a library designed to simplify the development of UI for chat. It has flexible possibilities for styling, customizing and data management.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/stfalcon-studio/ChatKit/master/images/HEADER.jpg">
