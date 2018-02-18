@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.view.View.GONE;
@@ -51,7 +52,9 @@ import static android.view.View.VISIBLE;
 public class DialogsListAdapter<DIALOG extends IDialog>
         extends RecyclerView.Adapter<DialogsListAdapter.BaseDialogViewHolder> {
 
+    private final IdMap idMap = new IdMap();
     private List<DIALOG> items = new ArrayList<>();
+
     private int itemLayoutId;
     private Class<? extends BaseDialogViewHolder> holderClass;
     private ImageLoader imageLoader;
@@ -93,6 +96,8 @@ public class DialogsListAdapter<DIALOG extends IDialog>
         this.itemLayoutId = itemLayoutId;
         this.holderClass = holderClass;
         this.imageLoader = imageLoader;
+
+        setHasStableIds(true);
     }
 
     @SuppressWarnings("unchecked")
@@ -131,6 +136,13 @@ public class DialogsListAdapter<DIALOG extends IDialog>
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        String guid = items.get(position).getId();
+
+        return idMap.getLongIdById(guid);
     }
 
     /**
@@ -213,8 +225,10 @@ public class DialogsListAdapter<DIALOG extends IDialog>
      * @param dialog dialog item
      */
     public void addItem(DIALOG dialog) {
-        items.add(dialog);
-        notifyItemInserted(0);
+        if (getById(dialog.getId()) == null) {
+            items.add(dialog);
+            notifyItemInserted(0);
+        }
     }
 
     /**
@@ -261,7 +275,26 @@ public class DialogsListAdapter<DIALOG extends IDialog>
     }
 
     /**
-     * Update last message in dialog and swap item to top of list.
+     * Update dialog by a supplied dialog ID
+     *
+     * @param id ID of the dialog you want to update
+     * @param item new dialog item
+     */
+    public void updateItemById(String id, DIALOG item) {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getId().equals(id)) {
+                items.set(i, item);
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Update last message in dialog and move the item to top of list.
      *
      * @param dialogId Dialog ID
      * @param message  New message
@@ -272,12 +305,15 @@ public class DialogsListAdapter<DIALOG extends IDialog>
         boolean dialogExist = false;
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i).getId().equals(dialogId)) {
-                items.get(i).setLastMessage(message);
-                notifyItemChanged(i);
-                if (i != 0) {
-                    Collections.swap(items, i, 0);
-                    notifyItemMoved(i, 0);
-                }
+                DIALOG dialog = items.get(i);
+                dialog.setLastMessage(message);
+
+                items.remove(i);
+                notifyItemRemoved(i);
+
+                items.add(0, dialog);
+                notifyItemInserted(0);
+
                 dialogExist = true;
                 break;
             }
@@ -662,6 +698,26 @@ public class DialogsListAdapter<DIALOG extends IDialog>
         protected void setDialogStyle(DialogListStyle dialogStyle) {
             this.dialogStyle = dialogStyle;
             applyStyle();
+        }
+    }
+
+    private static class IdMap {
+        private final HashMap<String, Long> idToLongMapping = new HashMap<>();
+        private final HashMap<Long, String> longToIdMapping = new HashMap<>();
+
+        private long idGenerator = 0;
+
+        public long getLongIdById(final String id) {
+            if (!idToLongMapping.containsKey(id)) {
+                final long longId = idGenerator++;
+                idToLongMapping.put(id, longId);
+                longToIdMapping.put(longId, id);
+            }
+            return idToLongMapping.get(id);
+        }
+
+        public String getGuidById(final long id) {
+            return longToIdMapping.get(id);
         }
     }
 }
