@@ -134,6 +134,21 @@ public class DialogsListAdapter<DIALOG extends IDialog>
     }
 
     /**
+     * Gets a dialog view by its ID
+     *
+     * @param id the ID of the dialog
+     * @return
+     */
+
+    public DIALOG getById(String id){
+        for (DIALOG dialog : items){
+            if (dialog.getId().equals(id)) return dialog;
+        }
+
+        return null;
+    }
+
+    /**
      * remove item with id
      *
      * @param id dialog i
@@ -181,7 +196,7 @@ public class DialogsListAdapter<DIALOG extends IDialog>
      *
      * @param newItems new dialogs list
      */
-    public void addItems(List<DIALOG> newItems) {
+    public void addItems(List<? extends DIALOG> newItems) {
         if (newItems != null) {
             if (items == null) {
                 items = new ArrayList<>();

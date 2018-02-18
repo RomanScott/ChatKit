@@ -54,6 +54,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
     private List<Wrapper> items;
 
     private int selectedItemsCount;
+    private boolean overrideStyle;
     private SelectionListener selectionListener;
 
     protected static boolean isSelectionModeEnabled;
@@ -76,7 +77,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
      * @param imageLoader image loading method.
      */
     public MessagesListAdapter(String senderId, ImageLoader imageLoader) {
-        this(senderId, new MessageHolders(), imageLoader);
+        this(senderId, new MessageHolders(), imageLoader, false);
     }
 
     /**
@@ -85,18 +86,20 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
      * @param senderId    identifier of sender.
      * @param holders     custom layouts and view holders. See {@link MessageHolders} documentation for details
      * @param imageLoader image loading method.
+     * @param overrideStyle whether or not the style should be overriden with its own implementation
      */
     public MessagesListAdapter(String senderId, MessageHolders holders,
-                               ImageLoader imageLoader) {
+                               ImageLoader imageLoader, boolean overrideStyle) {
         this.senderId = senderId;
         this.holders = holders;
         this.imageLoader = imageLoader;
         this.items = new ArrayList<>();
+        this.overrideStyle = overrideStyle;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return holders.getHolder(parent, viewType, messagesListStyle);
+        return holders.getHolder(parent, viewType, messagesListStyle, overrideStyle);
     }
 
     @SuppressWarnings("unchecked")
@@ -876,7 +879,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
         }
 
         @Override
-        public void applyStyle(MessagesListStyle style) {
+        public void applyStyle(MessagesListStyle style, boolean overrideStyle) {
             if (text != null) {
                 text.setTextColor(style.getDateHeaderTextColor());
                 text.setTextSize(TypedValue.COMPLEX_UNIT_PX, style.getDateHeaderTextSize());

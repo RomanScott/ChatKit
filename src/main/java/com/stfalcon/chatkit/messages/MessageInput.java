@@ -107,7 +107,7 @@ public class MessageInput extends RelativeLayout
      */
 
     public void setSendBackgroundDrawable(Drawable drawable){
-        ViewCompat.setBackground(messageInput, drawable);
+        ViewCompat.setBackground(messageSendButton, drawable);
     }
 
     /**

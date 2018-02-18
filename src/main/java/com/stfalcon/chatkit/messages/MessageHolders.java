@@ -322,25 +322,25 @@ public class MessageHolders {
     * PRIVATE METHODS
     * */
 
-    protected ViewHolder getHolder(ViewGroup parent, int viewType, MessagesListStyle messagesListStyle) {
+    protected ViewHolder getHolder(ViewGroup parent, int viewType, MessagesListStyle messagesListStyle, boolean overrideStyle) {
         switch (viewType) {
             case VIEW_TYPE_DATE_HEADER:
-                return getHolder(parent, dateHeaderLayout, dateHeaderHolder, messagesListStyle);
+                return getHolder(parent, dateHeaderLayout, dateHeaderHolder, messagesListStyle, overrideStyle);
             case VIEW_TYPE_TEXT_MESSAGE:
-                return getHolder(parent, incomingTextConfig, messagesListStyle);
+                return getHolder(parent, incomingTextConfig, messagesListStyle, overrideStyle);
             case -VIEW_TYPE_TEXT_MESSAGE:
-                return getHolder(parent, outcomingTextConfig, messagesListStyle);
+                return getHolder(parent, outcomingTextConfig, messagesListStyle, overrideStyle);
             case VIEW_TYPE_IMAGE_MESSAGE:
-                return getHolder(parent, incomingImageConfig, messagesListStyle);
+                return getHolder(parent, incomingImageConfig, messagesListStyle, overrideStyle);
             case -VIEW_TYPE_IMAGE_MESSAGE:
-                return getHolder(parent, outcomingImageConfig, messagesListStyle);
+                return getHolder(parent, outcomingImageConfig, messagesListStyle, overrideStyle);
             default:
                 for (ContentTypeConfig typeConfig : customContentTypes) {
                     if (Math.abs(typeConfig.type) == Math.abs(viewType)) {
                         if (viewType > 0)
-                            return getHolder(parent, typeConfig.incomingConfig, messagesListStyle);
+                            return getHolder(parent, typeConfig.incomingConfig, messagesListStyle, overrideStyle);
                         else
-                            return getHolder(parent, typeConfig.outcomingConfig, messagesListStyle);
+                            return getHolder(parent, typeConfig.outcomingConfig, messagesListStyle, overrideStyle);
                     }
                 }
         }
@@ -395,12 +395,12 @@ public class MessageHolders {
         return isOutcoming ? viewType * -1 : viewType;
     }
 
-    private ViewHolder getHolder(ViewGroup parent, HolderConfig holderConfig, MessagesListStyle style) {
-        return getHolder(parent, holderConfig.layout, holderConfig.holder, style);
+    private ViewHolder getHolder(ViewGroup parent, HolderConfig holderConfig, MessagesListStyle style, boolean overrideStyle) {
+        return getHolder(parent, holderConfig.layout, holderConfig.holder, style, overrideStyle);
     }
 
     private <HOLDER extends ViewHolder>
-    ViewHolder getHolder(ViewGroup parent, @LayoutRes int layout, Class<HOLDER> holderClass, MessagesListStyle style) {
+    ViewHolder getHolder(ViewGroup parent, @LayoutRes int layout, Class<HOLDER> holderClass, MessagesListStyle style, boolean overrideStyle) {
 
         View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
         try {
@@ -408,7 +408,7 @@ public class MessageHolders {
             constructor.setAccessible(true);
             HOLDER holder = constructor.newInstance(v);
             if (holder instanceof DefaultMessageViewHolder && style != null) {
-                ((DefaultMessageViewHolder) holder).applyStyle(style);
+                ((DefaultMessageViewHolder) holder).applyStyle(style, overrideStyle);
             }
             return holder;
         } catch (Exception e) {
@@ -532,8 +532,8 @@ public class MessageHolders {
         }
 
         @Override
-        public void applyStyle(MessagesListStyle style) {
-            super.applyStyle(style);
+        public void applyStyle(MessagesListStyle style, boolean overrideStyle) {
+            super.applyStyle(style, overrideStyle);
             if (bubble != null) {
                 bubble.setPadding(style.getIncomingDefaultBubblePaddingLeft(),
                         style.getIncomingDefaultBubblePaddingTop(),
@@ -581,8 +581,8 @@ public class MessageHolders {
         }
 
         @Override
-        public final void applyStyle(MessagesListStyle style) {
-            super.applyStyle(style);
+        public void applyStyle(MessagesListStyle style, boolean overrideStyle) {
+            super.applyStyle(style, overrideStyle);
             if (bubble != null) {
                 bubble.setPadding(style.getOutcomingDefaultBubblePaddingLeft(),
                         style.getOutcomingDefaultBubblePaddingTop(),
@@ -639,8 +639,8 @@ public class MessageHolders {
         }
 
         @Override
-        public final void applyStyle(MessagesListStyle style) {
-            super.applyStyle(style);
+        public final void applyStyle(MessagesListStyle style, boolean overrideStyle) {
+            super.applyStyle(style, overrideStyle);
             if (time != null) {
                 time.setTextColor(style.getIncomingImageTimeTextColor());
                 time.setTextSize(TypedValue.COMPLEX_UNIT_PX, style.getIncomingImageTimeTextSize());
@@ -690,8 +690,8 @@ public class MessageHolders {
         }
 
         @Override
-        public final void applyStyle(MessagesListStyle style) {
-            super.applyStyle(style);
+        public final void applyStyle(MessagesListStyle style, boolean overrideStyle) {
+            super.applyStyle(style, overrideStyle);
             if (time != null) {
                 time.setTextColor(style.getOutcomingImageTimeTextColor());
                 time.setTextSize(TypedValue.COMPLEX_UNIT_PX, style.getOutcomingImageTimeTextSize());
@@ -729,7 +729,7 @@ public class MessageHolders {
         }
 
         @Override
-        public void applyStyle(MessagesListStyle style) {
+        public void applyStyle(MessagesListStyle style, boolean overrideStyle) {
             if (text != null) {
                 text.setTextColor(style.getDateHeaderTextColor());
                 text.setTextSize(TypedValue.COMPLEX_UNIT_PX, style.getDateHeaderTextSize());
@@ -776,7 +776,7 @@ public class MessageHolders {
         }
 
         @Override
-        public void applyStyle(MessagesListStyle style) {
+        public void applyStyle(MessagesListStyle style, boolean overrideStyle) {
             if (time != null) {
                 time.setTextColor(style.getIncomingTimeTextColor());
                 time.setTextSize(TypedValue.COMPLEX_UNIT_PX, style.getIncomingTimeTextSize());
@@ -812,7 +812,7 @@ public class MessageHolders {
         }
 
         @Override
-        public void applyStyle(MessagesListStyle style) {
+        public void applyStyle(MessagesListStyle style, boolean overrideStyle) {
             if (time != null) {
                 time.setTextColor(style.getOutcomingTimeTextColor());
                 time.setTextSize(TypedValue.COMPLEX_UNIT_PX, style.getOutcomingTimeTextSize());
@@ -826,7 +826,7 @@ public class MessageHolders {
     * */
 
     interface DefaultMessageViewHolder {
-        void applyStyle(MessagesListStyle style);
+        void applyStyle(MessagesListStyle style, boolean overrideStyle);
     }
 
     private static class DefaultIncomingTextMessageViewHolder
