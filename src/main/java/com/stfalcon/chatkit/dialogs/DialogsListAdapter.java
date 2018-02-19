@@ -225,10 +225,8 @@ public class DialogsListAdapter<DIALOG extends IDialog>
      * @param dialog dialog item
      */
     public void addItem(DIALOG dialog) {
-        if (getById(dialog.getId()) == null) {
-            items.add(dialog);
-            notifyItemInserted(0);
-        }
+        items.add(dialog);
+        notifyItemInserted(0);
     }
 
     /**
