@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -700,8 +700,8 @@ public class DialogsListAdapter<DIALOG extends IDialog>
     }
 
     private static class IdMap {
-        private final HashMap<String, Long> idToLongMapping = new HashMap<>();
-        private final HashMap<Long, String> longToIdMapping = new HashMap<>();
+        private final ConcurrentHashMap<String, Long> idToLongMapping = new ConcurrentHashMap<>();
+        private final ConcurrentHashMap<Long, String> longToIdMapping = new ConcurrentHashMap<>();
 
         private long idGenerator = 0;
 
@@ -711,6 +711,7 @@ public class DialogsListAdapter<DIALOG extends IDialog>
                 idToLongMapping.put(id, longId);
                 longToIdMapping.put(longId, id);
             }
+
             return idToLongMapping.get(id);
         }
 
