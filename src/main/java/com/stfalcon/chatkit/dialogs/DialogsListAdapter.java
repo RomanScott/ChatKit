@@ -93,11 +93,24 @@ public class DialogsListAdapter<DIALOG extends IDialog>
      */
     public DialogsListAdapter(@LayoutRes int itemLayoutId, Class<? extends BaseDialogViewHolder> holderClass,
                               ImageLoader imageLoader) {
+        this(itemLayoutId, holderClass, imageLoader, false);
+    }
+
+    /**
+     * For custom list item layout and custom view holder
+     *
+     * @param itemLayoutId custom list item resource id
+     * @param holderClass  custom view holder class
+     * @param imageLoader  image loading method
+     * @param hasStableIds use the stable Ids optimization
+     */
+    public DialogsListAdapter(@LayoutRes int itemLayoutId, Class<? extends BaseDialogViewHolder> holderClass,
+                              ImageLoader imageLoader, boolean hasStableIds) {
         this.itemLayoutId = itemLayoutId;
         this.holderClass = holderClass;
         this.imageLoader = imageLoader;
 
-        setHasStableIds(true);
+        setHasStableIds(hasStableIds);
     }
 
     @SuppressWarnings("unchecked")
@@ -140,8 +153,9 @@ public class DialogsListAdapter<DIALOG extends IDialog>
 
     @Override
     public long getItemId(int position) {
-        String guid = items.get(position).getId();
+        if (!hasStableIds()) return super.getItemId(position);
 
+        String guid = items.get(position).getId();
         return idMap.getLongIdById(guid);
     }
 
@@ -344,6 +358,18 @@ public class DialogsListAdapter<DIALOG extends IDialog>
     public void sort(Comparator<DIALOG> comparator) {
         Collections.sort(items, comparator);
         notifyDataSetChanged();
+    }
+
+    public boolean hasDuplicates(){
+        List<String> ids = new ArrayList<>();
+
+        for (DIALOG d : items){
+            if (ids.contains(d.getId())) return true;
+
+            ids.add(d.getId());
+        }
+
+        return false;
     }
 
     /**
